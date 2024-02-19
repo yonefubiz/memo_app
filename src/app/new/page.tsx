@@ -9,15 +9,20 @@ export default function Memo() {
     const router = useRouter();
 
     const onClickSave = async () => {
-        fetch('/api/memo', {
+        const res = await fetch('/api/memo', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({title: inputTitle.current?.value, content: inputContent.current?.value}),
-        }).then((res) => res.json())
-        .then((json) => router.push("/memo/" + json.id))
-        .catch(() => alert("error"));
+        });
+        const data = await res.json();
+        
+        if(res.ok){
+            router.push("/memo/" + data.id);
+        } else{
+            alert("error");
+        }
     }
 
     return (

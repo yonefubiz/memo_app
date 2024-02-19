@@ -1,12 +1,12 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import {Card, CardHeader, CardBody, CardFooter, Input, Divider, Button, ButtonGroup} from "@nextui-org/react";
 
 export default function Memo() {
     const router = useRouter()
-    const id = useSearchParams().get("id");
-
+    // ダイナミックルーティングのパラメータの取得
+    const id = useParams().id;
     const inputTitle = useRef<HTMLInputElement>(null);
     const inputContent = useRef<HTMLInputElement>(null);
     const [data, setData] = useState({title:"",content:""});
@@ -19,27 +19,34 @@ export default function Memo() {
     }, [id]);
     
     const onClickSave = async () => {
-        fetch('/api/memo', {
+        const res = await fetch(id ? '/api/memo/' + id : "", {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({title: inputTitle.current?.value, content: inputContent.current?.value}),
-        }).then((res) => res.json())
-        .then((json) => router.push("/memo/" + json.id))
-        .catch(() => alert("error"));
+        });
+        if(res.ok){
+            alert("saved");
+        }else{
+            alert("error");
+        }
     }
 
     const onClickDelete = async () => {
-        fetch('/api/memo', {
+        const res = await fetch(id ? '/api/memo/' + id : "", {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({title: inputTitle.current?.value, content: inputContent.current?.value}),
-        }).then((res) => res.json())
-        .then((json) => router.push("/"))
-        .catch(() => alert("error"));
+        });
+
+        if(res.ok){
+            alert("deleted");
+            router.push("/");
+        }else{
+            alert("error");
+        }
     }
 
     return (
