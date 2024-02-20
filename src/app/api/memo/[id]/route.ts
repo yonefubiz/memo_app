@@ -4,7 +4,6 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     try {
         // Queryの取得
         const id = params.id;
-        console.log(id);
         return Response.json(await readMemo(id), {status: 200});
     } catch (e) {
         return Response.json({ message: 'Failed to read memo' }, {status: 500});
