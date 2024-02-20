@@ -27,7 +27,7 @@ export default function Memo() {
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <Card className="max-w-[400px]">
+            <Card className="max-w-[800px]" fullWidth>
                 <CardHeader className="flex gap-3">
                     <Input label="Title" ref={inputTitle}/>
                 </CardHeader>

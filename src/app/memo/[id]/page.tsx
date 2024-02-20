@@ -1,25 +1,31 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import {Card, CardHeader, CardBody, CardFooter, Input, Divider, Button, ButtonGroup} from "@nextui-org/react";
+import {Card, CardHeader, CardBody, CardFooter, Input, Divider, Button, ButtonGroup, Spinner} from "@nextui-org/react";
 
 export default function Memo() {
     const router = useRouter()
     // ダイナミックルーティングのパラメータの取得
-    const id = useParams().id;
+    const id = useParams<{id: string}>().id;
     const inputTitle = useRef<HTMLInputElement>(null);
     const inputContent = useRef<HTMLInputElement>(null);
-    const [data, setData] = useState({title:"",content:""});
+    const [data, setData] = useState<{title:string,content:string} | null>(null);
 
     useEffect(() => {
-      fetch(id ? "/api/memo/" + id : "")
-        .then((res) => res.json())
-        .then((json) => setData(json))
-        .catch(() => alert("error"));
+        console.log(typeof id)
+        console.log(id)
+        if(id){
+            fetch("/api/memo/" + id)
+                .then((res) => res.json())
+                .then((json) => setData({title:json.title,content:json.content}))
+                .catch(() => alert("error"));
+        }
     }, [id]);
-    
+
     const onClickSave = async () => {
-        const res = await fetch(id ? '/api/memo/' + id : "", {
+        console.log(inputTitle.current?.value)
+        console.log(inputContent.current?.value)
+        const res = await fetch('/api/memo/' + id, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -51,13 +57,14 @@ export default function Memo() {
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <Card className="max-w-[400px]">
+            {!data ? <Spinner />:
+            <Card className="max-w-[800px]" fullWidth>
                 <CardHeader className="flex gap-3">
-                    <Input label="Title" defaultValue={data.title}/>
+                    <Input label="Title" defaultValue={data.title} ref={inputTitle}/>
                 </CardHeader>
                 <Divider/>
                 <CardBody>
-                    <Input label="Content" defaultValue={data.content}/>
+                    <Input label="Content" defaultValue={data.content} ref={inputContent}/>
                 </CardBody>
                 <Divider/>
                 <CardFooter>
@@ -67,6 +74,7 @@ export default function Memo() {
                     </ButtonGroup>
                 </CardFooter>
             </Card>
+            }
         </main>
     );
 }
