@@ -12,8 +12,6 @@ export default function Memo() {
     const [data, setData] = useState<{title:string,content:string} | null>(null);
 
     useEffect(() => {
-        console.log(typeof id)
-        console.log(id)
         if(id){
             fetch("/api/memo/" + id)
                 .then((res) => res.json())
@@ -23,8 +21,6 @@ export default function Memo() {
     }, [id]);
 
     const onClickSave = async () => {
-        console.log(inputTitle.current?.value)
-        console.log(inputContent.current?.value)
         const res = await fetch('/api/memo/' + id, {
             method: 'PUT',
             headers: {
